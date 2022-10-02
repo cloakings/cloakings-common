@@ -9,6 +9,8 @@ class CloakerResult
     public function __construct(
         public readonly CloakModeEnum $mode,
         public readonly ?Response $response = null,
+        public readonly mixed $apiResponse = null,
+        public readonly array $params = [],
         public readonly float $probability = 1.0, // 0.0 - 1.0
     ) {
     }
