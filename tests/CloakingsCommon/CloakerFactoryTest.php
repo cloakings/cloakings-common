@@ -2,6 +2,7 @@
 
 namespace Cloakings\Tests\CloakingsCommon;
 
+use Cloakings\CloakingsCommon\AlwaysRealCloaker;
 use Cloakings\CloakingsCommon\CloakerFactory;
 use Cloakings\CloakingsCommon\CloakModeEnum;
 use Cloakings\CloakingsCommon\SampleCloaker;
@@ -18,7 +19,7 @@ class CloakerFactoryTest extends TestCase
         self::assertSame(CloakModeEnum::Real, $result->mode);
         self::assertNull($result->response);
 
-        $result = $cloaker->handle(new Request(server: ['HTTP_USER_AGENT' => 'GoogleBot']));
+        $result = $cloaker->handle(new Request(server: ['HTTP_USER_AGENT' => 'GoogleBot', 'REMOTE_ADDR' => '8.8.8.8']));
         self::assertSame(CloakModeEnum::Fake, $result->mode);
         self::assertNull($result->response);
     }
@@ -26,6 +27,7 @@ class CloakerFactoryTest extends TestCase
     public function testCreateChain(): void
     {
         $cloaker = (new CloakerFactory())->createChain([
+            AlwaysRealCloaker::class,
             SampleCloaker::class,
         ]);
 
@@ -33,7 +35,7 @@ class CloakerFactoryTest extends TestCase
         self::assertSame(CloakModeEnum::Real, $result->mode);
         self::assertNull($result->response);
 
-        $result = $cloaker->handle(new Request(server: ['HTTP_USER_AGENT' => 'GoogleBot']));
+        $result = $cloaker->handle(new Request(server: ['HTTP_USER_AGENT' => 'GoogleBot', 'REMOTE_ADDR' => '8.8.8.8']));
         self::assertSame(CloakModeEnum::Fake, $result->mode);
         self::assertNull($result->response);
     }

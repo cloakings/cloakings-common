@@ -1,6 +1,6 @@
 {
     "name": "cloakings/cloakings-common",
-    "description": "DateTime management",
+    "description": "Cloakings common library",
     "type": "library",
     "license": "MIT",
     "require": {

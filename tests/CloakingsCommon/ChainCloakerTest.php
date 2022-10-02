@@ -2,6 +2,7 @@
 
 namespace Cloakings\Tests\CloakingsCommon;
 
+use Cloakings\CloakingsCommon\AlwaysRealCloaker;
 use Cloakings\CloakingsCommon\ChainCloaker;
 use Cloakings\CloakingsCommon\CloakModeEnum;
 use Cloakings\CloakingsCommon\SampleCloaker;
@@ -13,6 +14,7 @@ class ChainCloakerTest extends TestCase
     public function testHandle(): void
     {
         $cloaker = new ChainCloaker([
+            new AlwaysRealCloaker(),
             new SampleCloaker(),
         ]);
 
@@ -20,7 +22,7 @@ class ChainCloakerTest extends TestCase
         self::assertSame(CloakModeEnum::Real, $result->mode);
         self::assertNull($result->response);
 
-        $result = $cloaker->handle(new Request(server: ['HTTP_USER_AGENT' => 'GoogleBot']));
+        $result = $cloaker->handle(new Request(server: ['HTTP_USER_AGENT' => 'GoogleBot', 'REMOTE_ADDR' => '8.8.8.8']));
         self::assertSame(CloakModeEnum::Fake, $result->mode);
         self::assertNull($result->response);
     }

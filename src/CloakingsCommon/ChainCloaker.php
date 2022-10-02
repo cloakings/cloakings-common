@@ -21,7 +21,7 @@ class ChainCloaker implements CloakerInterface
         }
     }
 
-    public function handle(Request $request): CloakerResult
+    public function handle(Request $request, float $minFakeProbability = 0.5): CloakerResult
     {
         $successResult = null;
         $errorResult = new CloakerResult(CloakModeEnum::Error);
@@ -29,7 +29,10 @@ class ChainCloaker implements CloakerInterface
         foreach ($this->cloakers as $cloaker) {
             $r = $cloaker->handle($request);
             if ($r->mode === CloakModeEnum::Fake || $r->mode === CloakModeEnum::Response) {
-                return $r;
+                if ($r->probability >= $minFakeProbability) {
+                    return $r;
+                }
+                $successResult = $r;
             }
             if ($r->mode === CloakModeEnum::Real) {
                 $successResult = $r;
