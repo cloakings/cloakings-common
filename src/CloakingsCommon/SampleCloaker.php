@@ -19,7 +19,21 @@ class SampleCloaker implements CloakerInterface
      */
     public function handle(Request $request): CloakerResult
     {
-        $userAgent = $request->headers->get('user-agent') ?? '';
+        return $this->handleParams($this->collectParams($request));
+    }
+
+    public function collectParams(Request $request): array
+    {
+        return [
+            'user_agent' => $request->headers->get('user-agent') ?? '',
+            'ip' => $request->getClientIp() ?? '',
+        ];
+    }
+
+    public function handleParams(array $params): CloakerResult
+    {
+        $userAgent = $params['user_agent'] ?? '';
+        $ip = $params['ip'] ?? '';
 
         if ($userAgent === '') {
             return new CloakerResult(
@@ -29,7 +43,7 @@ class SampleCloaker implements CloakerInterface
         }
 
         if ($this->isGooglebotUserAgent($userAgent)) {
-            if ($this->isGoogleIp($request->getClientIp() ?? '')) {
+            if ($this->isGoogleIp($ip)) {
                 $mode = CloakModeEnum::Fake;
             } else {
                 return new CloakerResult(

@@ -9,6 +9,8 @@ class ChainCloaker implements CloakerInterface
     /** @var CloakerInterface[] */
     private array $cloakers;
 
+    private float $minFakeProbability = 0.5;
+
     public function __construct(
         array $cloakers,
     ) {
@@ -21,15 +23,32 @@ class ChainCloaker implements CloakerInterface
         }
     }
 
-    public function handle(Request $request, float $minFakeProbability = 0.5): CloakerResult
+    public function setMinFakeProbability(float $minFakeProbability): self
+    {
+        $this->minFakeProbability = $minFakeProbability;
+
+        return $this;
+    }
+
+    public function handle(Request $request): CloakerResult
+    {
+        return $this->handleParams($this->collectParams($request));
+    }
+
+    public function collectParams(Request $request): array
+    {
+        return ['request' => $request];
+    }
+
+    public function handleParams(array $params): CloakerResult
     {
         $successResult = null;
         $errorResult = new CloakerResult(CloakModeEnum::Error);
 
         foreach ($this->cloakers as $cloaker) {
-            $r = $cloaker->handle($request);
+            $r = $cloaker->handle($params['request']);
             if ($r->mode === CloakModeEnum::Fake || $r->mode === CloakModeEnum::Response) {
-                if ($r->probability >= $minFakeProbability) {
+                if ($r->probability >= $this->minFakeProbability) {
                     return $r;
                 }
                 $successResult = $r;
