@@ -14,4 +14,14 @@ class CloakerResult
         public readonly float $probability = 1.0, // 0.0 - 1.0
     ) {
     }
+
+    public function isReal(): bool
+    {
+        return $this->mode === CloakModeEnum::Real;
+    }
+
+    public function isFake(): bool
+    {
+        return $this->mode === CloakModeEnum::Fake;
+    }
 }
