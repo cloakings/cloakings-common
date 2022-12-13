@@ -53,7 +53,7 @@ class CloakerResult implements JsonSerializable
             'mode' => $this->mode->value,
             'response' => [
                 'status_code' => $this->response->getStatusCode(),
-                'headers' => $this->response->headers->all(),
+                'headers' => CloakerHelper::flattenHeaders($this->response->headers->all()),
                 'content' => $this->response->getContent(),
             ],
             'api_response' => $this->apiResponse->jsonSerialize(),
