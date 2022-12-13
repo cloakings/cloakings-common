@@ -3,9 +3,10 @@
 
 namespace Cloakings\CloakingsCommon;
 
+use JsonSerializable;
 use Symfony\Component\HttpFoundation\Response;
 
-class CloakerResult
+class CloakerResult implements JsonSerializable
 {
     public function __construct(
         public readonly CloakModeEnum $mode,
@@ -44,5 +45,20 @@ class CloakerResult
     public function getResponseTime(): float
     {
         return $this->apiResponse->getResponseTime();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'mode' => $this->mode->value,
+            'response' => [
+                'status_code' => $this->response->getStatusCode(),
+                'headers' => $this->response->headers->all(),
+                'content' => $this->response->getContent(),
+            ],
+            'api_response' => $this->apiResponse->jsonSerialize(),
+            'params' => $this->params,
+            'probability' => $this->probability,
+        ];
     }
 }

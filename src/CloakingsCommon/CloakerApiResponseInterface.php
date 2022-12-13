@@ -2,7 +2,9 @@
 
 namespace Cloakings\CloakingsCommon;
 
-interface CloakerApiResponseInterface
+use JsonSerializable;
+
+interface CloakerApiResponseInterface extends JsonSerializable
 {
     public function isReal(): bool;
     public function isFake(): bool;
